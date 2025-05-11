@@ -172,6 +172,9 @@ export default function CameraHandler() {
 
   // Check if the browser is using HTTPS
   const isSecureContext = () => {
+    if (typeof window === "undefined") {
+      return false
+    }
     return window.isSecureContext
   }
 

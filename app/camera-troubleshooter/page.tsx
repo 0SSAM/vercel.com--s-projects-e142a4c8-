@@ -1,4 +1,12 @@
-import CameraHandler from "@/components/camera-handler"
+"use client"
+
+import dynamic from "next/dynamic"
+
+// Dynamically import the CameraHandler with SSR disabled
+const CameraHandler = dynamic(() => import("@/components/camera-handler"), {
+  ssr: false,
+  loading: () => <div className="p-8 text-center">Loading camera interface...</div>,
+})
 
 export default function CameraTroubleshooterPage() {
   return (

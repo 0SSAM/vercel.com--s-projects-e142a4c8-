@@ -2,6 +2,9 @@
  * Checks if the MediaDevices API is supported in the current browser
  */
 export function isCameraSupported(): boolean {
+  if (typeof window === "undefined" || typeof navigator === "undefined") {
+    return false
+  }
   return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
 }
 
@@ -9,6 +12,9 @@ export function isCameraSupported(): boolean {
  * Checks if the current context is secure (HTTPS)
  */
 export function isSecureContext(): boolean {
+  if (typeof window === "undefined") {
+    return false
+  }
   return window.isSecureContext
 }
 
@@ -16,6 +22,10 @@ export function isSecureContext(): boolean {
  * Gets the browser name and version
  */
 export function getBrowserInfo(): { name: string; version: string } {
+  if (typeof navigator === "undefined") {
+    return { name: "Unknown", version: "Unknown" }
+  }
+
   const userAgent = navigator.userAgent
   let browserName = "Unknown"
   let browserVersion = "Unknown"
@@ -84,6 +94,10 @@ export function formatConstraints(constraints: MediaTrackConstraints): string {
  * Gets camera capabilities if supported
  */
 export async function getCameraCapabilities(stream: MediaStream): Promise<Record<string, any> | null> {
+  if (typeof window === "undefined") {
+    return null
+  }
+
   const videoTrack = stream.getVideoTracks()[0]
 
   if (!videoTrack || !videoTrack.getCapabilities) {
