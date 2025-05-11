@@ -26,11 +26,24 @@ export default function CameraHandler() {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices()
       const videoDevices = devices.filter((device) => device.kind === "videoinput")
-      setDevices(videoDevices)
+
+      // Ensure each device has a valid deviceId
+      const validDevices = videoDevices.map((device, index) => {
+        if (!device.deviceId) {
+          // Create a copy with a valid deviceId
+          return {
+            ...device,
+            deviceId: `camera-${index}`,
+          }
+        }
+        return device
+      })
+
+      setDevices(validDevices)
 
       // Select the first device by default if available
-      if (videoDevices.length > 0 && !selectedDeviceId) {
-        setSelectedDeviceId(videoDevices[0].deviceId)
+      if (validDevices.length > 0 && !selectedDeviceId) {
+        setSelectedDeviceId(validDevices[0].deviceId)
       }
     } catch (err) {
       console.error("Error enumerating devices:", err)
@@ -204,11 +217,15 @@ export default function CameraHandler() {
               <SelectValue placeholder="Select a camera" />
             </SelectTrigger>
             <SelectContent>
-              {devices.map((device) => (
-                <SelectItem key={device.deviceId} value={device.deviceId}>
-                  {device.label || `Camera ${devices.indexOf(device) + 1}`}
-                </SelectItem>
-              ))}
+              {devices.map((device, index) => {
+                // Skip devices with empty deviceId or use a fallback value
+                const deviceId = device.deviceId || `camera-${index}`
+                return (
+                  <SelectItem key={deviceId} value={deviceId}>
+                    {device.label || `Camera ${index + 1}`}
+                  </SelectItem>
+                )
+              })}
             </SelectContent>
           </Select>
         </div>
